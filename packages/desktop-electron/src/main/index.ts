@@ -41,7 +41,7 @@ import {
   setWslConfig,
   spawnLocalServer,
 } from "./server"
-import { createLoadingWindow, createMainWindow, setDockIcon } from "./windows"
+import { createLoadingWindow, createMainWindow, setBackgroundColor, setDockIcon } from "./windows"
 
 type ServerConnection =
   | { variant: "existing"; url: string }
@@ -207,7 +207,6 @@ async function initialize() {
 
   const globals = {
     updaterEnabled: UPDATER_ENABLED,
-    wsl: getWslConfig().enabled,
     deepLinks: pendingDeepLinks,
   }
 
@@ -288,6 +287,7 @@ registerIpcHandlers({
   runUpdater: async (alertOnFail) => checkForUpdates(alertOnFail),
   checkUpdate: async () => checkUpdate(),
   installUpdate: async () => installUpdate(),
+  setBackgroundColor: (color) => setBackgroundColor(color),
 })
 
 function killSidecar() {

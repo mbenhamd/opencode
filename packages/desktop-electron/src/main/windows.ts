@@ -5,11 +5,20 @@ import { fileURLToPath } from "node:url"
 
 type Globals = {
   updaterEnabled: boolean
-  wsl: boolean
   deepLinks?: string[]
 }
 
 const root = dirname(fileURLToPath(import.meta.url))
+
+let backgroundColor: string | undefined
+
+export function setBackgroundColor(color: string) {
+  backgroundColor = color
+}
+
+export function getBackgroundColor(): string | undefined {
+  return backgroundColor
+}
 
 function iconsDir() {
   return app.isPackaged ? join(process.resourcesPath, "icons") : join(root, "../../resources/icons")
@@ -39,6 +48,7 @@ export function createMainWindow(globals: Globals) {
     show: true,
     title: "OpenCode",
     icon: iconPath(),
+    backgroundColor,
     ...(process.platform === "darwin"
       ? {
           titleBarStyle: "hidden" as const,
@@ -78,6 +88,7 @@ export function createLoadingWindow(globals: Globals) {
     center: true,
     show: true,
     icon: iconPath(),
+    backgroundColor,
     ...(process.platform === "darwin" ? { titleBarStyle: "hidden" as const } : {}),
     ...(process.platform === "win32"
       ? {
@@ -118,7 +129,6 @@ function injectGlobals(win: BrowserWindow, globals: Globals) {
     const deepLinks = globals.deepLinks ?? []
     const data = {
       updaterEnabled: globals.updaterEnabled,
-      wsl: globals.wsl,
       deepLinks: Array.isArray(deepLinks) ? deepLinks.splice(0) : deepLinks,
     }
     void win.webContents.executeJavaScript(

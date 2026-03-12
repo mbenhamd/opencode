@@ -10,8 +10,9 @@ import {
   useCommand,
 } from "@opencode-ai/app"
 import { Splash } from "@opencode-ai/ui/logo"
+import { useTheme } from "@opencode-ai/ui/theme"
 import type { AsyncStorage } from "@solid-primitives/storage"
-import { type Accessor, createResource, type JSX, onCleanup, onMount, Show } from "solid-js"
+import { type Accessor, createEffect, createResource, type JSX, onCleanup, onMount, Show } from "solid-js"
 import { render } from "solid-js/web"
 import { MemoryRouter } from "@solidjs/router"
 import pkg from "../../package.json"
@@ -279,9 +280,25 @@ render(() => {
               return null
             }
 
+            function ThemeSync() {
+              const theme = useTheme()
+
+              createEffect(() => {
+                theme.themeId()
+                theme.mode()
+                const bg = getComputedStyle(document.documentElement).getPropertyValue("--background-base").trim()
+                if (bg) {
+                  void window.api.setBackgroundColor(bg)
+                }
+              })
+
+              return null
+            }
+
             return (
               <AppInterface defaultServer={ServerConnection.key(server)} servers={[server]} router={MemoryRouter}>
                 <Inner />
+                <ThemeSync />
               </AppInterface>
             )
           }}
